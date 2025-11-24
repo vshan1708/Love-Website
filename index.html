@@ -1,0 +1,164 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For My Love</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://i.imgur.com/MYwRrJv.jpeg');
+            background-position: center;
+            background-size: cover;
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #ffffff;
+            text-shadow: 0 0 10px #ff0050, 0 0 20px #ff0050;
+            margin-bottom: 30px;
+            font-size: 3.5rem;
+            text-align: center;
+            padding: 0 20px;
+            line-height: 1.2;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap; /* Allows buttons to stack on very small screens */
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            /* Better touch target */
+            min-width: 120px; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #yesBtn {
+            background-color: #ff0050;
+            color: white;
+            box-shadow: 0 0 15px rgba(255, 0, 80, 0.5);
+        }
+
+        #noBtn {
+            background-color: transparent;
+            border: 2px solid #444;
+            color: #aaa;
+        }
+
+        /* Music Button Style */
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        #musicBtn {
+            background: rgba(0,0,0,0.5);
+            color: #ff0050;
+            border: 1px solid #ff0050;
+            padding: 8px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+
+        /* --- MOBILE SPECIFIC STYLES --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .btn { padding: 12px 30px; font-size: 1rem; }
+            .music-control { top: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="music-control">
+        <audio id="bgMusic" loop playsinline>
+            <source src="images/Dude Train BGM.mp3" type="audio/mpeg">
+        </audio>
+        <button onclick="toggleMusic()" id="musicBtn">🎵 Play Music</button>
+    </div>
+
+    <h1>Do you love me? ❤️</h1>
+
+    <div class="buttons">
+        <button id="yesBtn" class="btn" onclick="goToLovePage()">YES</button>
+        <button id="noBtn" class="btn" onclick="handleNoClick()">NO</button>
+    </div>
+
+    <script>
+        const messages = [ "No", "Are you sure?", "Really sure?", "Think again...", "Last chance!", "Surely not?", "You might regret this!", "Give it another thought!", "Are you absolutely certain?", "This could be a mistake!", "Have a heart!", "Don't be so cold!", "Change of heart?", "Wouldn't you reconsider?", "Is that your final answer?", "You're breaking my heart ;(" ];
+
+        let messageIndex = 0;
+
+        function handleNoClick() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            noBtn.textContent = messages[messageIndex];
+            messageIndex = (messageIndex + 1) % messages.length;
+            const currentSize = parseFloat(window.getComputedStyle(yesBtn).fontSize);
+            yesBtn.style.fontSize = `${currentSize * 1.5}px`;
+        }
+
+        function goToLovePage() {
+            window.location.href = "love_page.html";
+        }
+
+        const audio = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+
+        function toggleMusic() {
+            if (audio.paused) {
+                audio.play();
+                musicBtn.innerText = "⏸️ Pause";
+            } else {
+                audio.pause();
+                musicBtn.innerText = "🎵 Play";
+            }
+        }
+
+        // Mobile browsers require a "touch" to start audio
+        document.body.addEventListener('touchstart', function() {
+            if(audio.paused) {
+                audio.play();
+                musicBtn.innerText = "⏸️ Pause";
+            }
+        }, { once: true });
+        
+        document.body.addEventListener('click', function() {
+            if(audio.paused) {
+                audio.play();
+                musicBtn.innerText = "⏸️ Pause";
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
