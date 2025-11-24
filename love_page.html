@@ -15,6 +15,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            /* FIXED: Using direct Imgur link for reliability */
             background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.8)), url('https://i.imgur.com/kJ8dQ0F.jpeg') center/cover no-repeat;
             font-family: 'Montserrat', sans-serif;
             color: white;
@@ -32,7 +33,7 @@
             border-radius: 20px;
             box-shadow: 0 0 40px rgba(0,0,0,0.8);
             max-width: 600px;
-            width: 85%; /* Fits better on mobile */
+            width: 85%;
             animation: fadeIn 2s ease;
         }
 
@@ -134,7 +135,6 @@
             font-size: 0.8rem;
         }
 
-        /* Mobile specific adjustments */
         @media (max-width: 600px) {
             h1 { font-size: 2.5rem; }
             #timer { font-size: 0.9rem; padding: 10px; }
@@ -204,7 +204,6 @@
             }
         }
 
-        // Mobile Auto-Play Triggers
         document.body.addEventListener('touchstart', function() {
             if(audio.paused) {
                 audio.play();
