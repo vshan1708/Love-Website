@@ -15,8 +15,8 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* FIXED: Using direct Imgur link for reliability */
-            background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.8)), url('https://i.imgur.com/kJ8dQ0F.jpeg') center/cover no-repeat;
+            /* NEW WORKING BACKGROUND: Dark Mood */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
             font-family: 'Montserrat', sans-serif;
             color: white;
             overflow: hidden;
@@ -195,27 +195,16 @@
         const musicBtn = document.getElementById('musicBtn');
 
         function toggleMusic() {
-            if (audio.paused) {
-                audio.play();
-                musicBtn.innerText = "⏸️ Pause";
-            } else {
-                audio.pause();
-                musicBtn.innerText = "🎵 Play";
-            }
+            if (audio.paused) { audio.play(); musicBtn.innerText = "⏸️ Pause"; } 
+            else { audio.pause(); musicBtn.innerText = "🎵 Play"; }
         }
 
         document.body.addEventListener('touchstart', function() {
-            if(audio.paused) {
-                audio.play();
-                musicBtn.innerText = "⏸️ Pause";
-            }
+            if(audio.paused) { audio.play(); musicBtn.innerText = "⏸️ Pause"; }
         }, { once: true });
 
         document.body.addEventListener('click', function() {
-            if(audio.paused) {
-                audio.play();
-                musicBtn.innerText = "⏸️ Pause";
-            }
+            if(audio.paused) { audio.play(); musicBtn.innerText = "⏸️ Pause"; }
         }, { once: true });
     </script>
 </body>
