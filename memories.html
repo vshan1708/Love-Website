@@ -12,12 +12,10 @@
             padding: 0;
             height: 100vh;
             width: 100vw;
-            background: #0a0a0a;
-            /* UPDATED: Matches love_page.html (Dark Hearts/Bokeh) */
+            
+            /* NEW BACKGROUND: Copied from love_page.html */
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed; 
+            
             font-family: 'Montserrat', sans-serif;
             overflow: hidden;
             display: flex;
@@ -192,6 +190,7 @@
         let zIndexCounter = 1;
 
         function showNextMemory() {
+            // Trigger music on first tap
             const music = document.getElementById('loveSong');
             const musicBtn = document.getElementById('musicBtn');
             if (music.paused) {
@@ -206,6 +205,7 @@
             const card = document.createElement('div');
             card.classList.add('memory-card');
             
+            // --- MOBILE POSITIONING LOGIC ---
             const isMobile = window.innerWidth < 600;
             const minPos = isMobile ? 30 : 20; 
             const maxPos = isMobile ? 40 : 60; 
