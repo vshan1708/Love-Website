@@ -15,6 +15,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            /* FIXED: Using direct Imgur link for reliability */
             background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.95)), url('https://i.imgur.com/MYwRrJv.jpeg');
             background-position: center;
             background-size: cover;
@@ -38,7 +39,7 @@
             flex-direction: row;
             gap: 20px;
             align-items: center;
-            flex-wrap: wrap; /* Allows buttons to stack on very small screens */
+            flex-wrap: wrap; 
             justify-content: center;
         }
 
@@ -53,7 +54,6 @@
             font-weight: 600;
             letter-spacing: 1px;
             position: relative;
-            /* Better touch target */
             min-width: 120px; 
             -webkit-tap-highlight-color: transparent;
         }
@@ -70,7 +70,6 @@
             color: #aaa;
         }
 
-        /* Music Button Style */
         .music-control {
             position: fixed;
             top: 20px;
@@ -90,7 +89,6 @@
             transition: 0.3s;
         }
 
-        /* --- MOBILE SPECIFIC STYLES --- */
         @media (max-width: 768px) {
             h1 { font-size: 2.5rem; }
             .btn { padding: 12px 30px; font-size: 1rem; }
@@ -145,7 +143,6 @@
             }
         }
 
-        // Mobile browsers require a "touch" to start audio
         document.body.addEventListener('touchstart', function() {
             if(audio.paused) {
                 audio.play();
