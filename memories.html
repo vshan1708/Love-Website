@@ -13,10 +13,10 @@
             height: 100vh;
             width: 100vw;
             background: #0a0a0a;
+            /* FIXED: Using direct Imgur link for reliability */
             background: linear-gradient(rgba(0,0,0,0.9), rgba(0,0,0,0.9)), url('https://i.imgur.com/MYwRrJv.jpeg');
             background-size: cover;
             background-position: center;
-            /* Important for mobile scrolling issues */
             background-attachment: fixed; 
             font-family: 'Montserrat', sans-serif;
             overflow: hidden;
@@ -29,7 +29,7 @@
         #revealBtn {
             position: absolute;
             z-index: 1000;
-            bottom: 30px; /* Higher on mobile to avoid swipe bar */
+            bottom: 30px;
             padding: 15px 30px;
             font-size: 1.2rem;
             background: #ff0050;
@@ -118,10 +118,9 @@
             font-size: 0.8rem;
         }
 
-        /* --- MOBILE TWEAKS --- */
         @media (max-width: 600px) {
             .memory-card {
-                width: 200px; /* Smaller card for phone */
+                width: 200px;
                 padding: 5px 5px 30px 5px;
             }
             .memory-card img, .memory-card video {
@@ -193,7 +192,6 @@
         let zIndexCounter = 1;
 
         function showNextMemory() {
-            // Trigger music on first tap (Works best for mobile)
             const music = document.getElementById('loveSong');
             const musicBtn = document.getElementById('musicBtn');
             if (music.paused) {
@@ -208,11 +206,9 @@
             const card = document.createElement('div');
             card.classList.add('memory-card');
             
-            // --- MOBILE POSITIONING LOGIC ---
-            // If screen is narrow (mobile), keep photos closer to center
             const isMobile = window.innerWidth < 600;
-            const minPos = isMobile ? 30 : 20; // Start at 30% width
-            const maxPos = isMobile ? 40 : 60; // Range width
+            const minPos = isMobile ? 30 : 20; 
+            const maxPos = isMobile ? 40 : 60; 
             
             const randomLeft = Math.random() * maxPos + minPos; 
             const randomTop = Math.random() * 50 + 20; 
