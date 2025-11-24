@@ -13,7 +13,7 @@
             height: 100vh;
             width: 100vw;
             
-            /* NEW BACKGROUND: Copied from love_page.html */
+            /* BACKGROUND PRESERVED */
             background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=2070&auto=format&fit=crop') center/cover no-repeat;
             
             font-family: 'Montserrat', sans-serif;
@@ -22,6 +22,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            user-select: none; /* Prevents highlighting text while dragging */
         }
 
         #revealBtn {
@@ -42,6 +43,10 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        #revealBtn:active {
+            transform: scale(0.95);
+        }
+
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 0, 80, 0.7); }
             70% { box-shadow: 0 0 0 15px rgba(255, 0, 80, 0); }
@@ -52,25 +57,28 @@
             position: relative;
             width: 100%;
             height: 100%;
-            pointer-events: none;
+            pointer-events: none; /* Allows clicks to pass through empty spaces */
         }
 
         .memory-card {
             position: absolute;
             background: white;
-            padding: 10px 10px 40px 10px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 10px 10px 35px 10px; /* Polaroid style bottom padding */
+            /* Enhanced shadow for depth */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.4);
             width: 250px; 
-            border-radius: 4px;
-            transform: translate(-50%, -50%) scale(0.5);
+            border-radius: 3px;
+            transform-origin: center;
             opacity: 0;
-            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Smooth transition for entrance, but simplified for dragging performance */
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: auto; 
+            cursor: grab;
+            touch-action: none; /* Important for dragging on mobile */
         }
 
-        .memory-card.active {
-            opacity: 1;
-            transform: translate(-50%, -50%) scale(1);
+        .memory-card:active {
+            cursor: grabbing;
         }
 
         .memory-card img, .memory-card video {
@@ -78,7 +86,8 @@
             height: 300px;
             object-fit: cover;
             border-radius: 2px;
-            background-color: #000;
+            background-color: #1a1a1a;
+            pointer-events: none; /* Prevents image dragging issues */
         }
 
         #backBtn {
@@ -101,7 +110,7 @@
             position: fixed;
             top: 15px;
             right: 15px;
-            z-index: 100;
+            z-index: 2000; /* Ensure it stays above dragged cards */
         }
         
         #musicBtn {
@@ -118,11 +127,11 @@
 
         @media (max-width: 600px) {
             .memory-card {
-                width: 200px;
-                padding: 5px 5px 30px 5px;
+                width: 180px; /* Slightly smaller for mobile optimization */
+                padding: 6px 6px 25px 6px;
             }
             .memory-card img, .memory-card video {
-                height: 240px;
+                height: 220px;
             }
         }
     </style>
@@ -187,7 +196,9 @@
         const container = document.getElementById('memoryContainer');
         const btn = document.getElementById('revealBtn');
         const backBtn = document.getElementById('backBtn');
-        let zIndexCounter = 1;
+        
+        // Z-Index Manager: Ensures newly clicked/dragged cards are always on top
+        let globalZIndex = 100;
 
         function showNextMemory() {
             // Trigger music on first tap
@@ -205,19 +216,20 @@
             const card = document.createElement('div');
             card.classList.add('memory-card');
             
-            // --- MOBILE POSITIONING LOGIC ---
+            // Random positioning
             const isMobile = window.innerWidth < 600;
-            const minPos = isMobile ? 30 : 20; 
-            const maxPos = isMobile ? 40 : 60; 
+            const minPos = isMobile ? 20 : 30; 
+            const maxPos = isMobile ? 80 : 70; 
             
-            const randomLeft = Math.random() * maxPos + minPos; 
-            const randomTop = Math.random() * 50 + 20; 
-            const randomRotate = Math.random() * 30 - 15;
+            const randomLeft = Math.random() * (maxPos - minPos) + minPos; 
+            const randomTop = Math.random() * (60 - 20) + 20; 
+            const randomRotate = Math.random() * 40 - 20; // -20deg to 20deg
 
             card.style.left = randomLeft + '%';
             card.style.top = randomTop + '%';
-            card.style.zIndex = zIndexCounter++;
-            card.style.transform = `translate(-50%, -50%) rotate(${randomRotate}deg) scale(0.5)`;
+            card.style.zIndex = ++globalZIndex;
+            // Initial state for animation
+            card.style.transform = `translate(-50%, -50%) scale(0.2) rotate(${randomRotate}deg)`;
 
             let mediaHtml = '';
             if (data.type === 'video') {
@@ -228,10 +240,15 @@
 
             card.innerHTML = mediaHtml;
             container.appendChild(card);
+            
+            // Add Drag and Touch Functionality
+            makeDraggable(card, randomRotate);
 
+            // Animate in
             setTimeout(() => {
-                card.style.transform = `translate(-50%, -50%) rotate(${randomRotate}deg) scale(1)`;
                 card.style.opacity = '1';
+                card.style.transform = `translate(-50%, -50%) scale(1) rotate(${randomRotate}deg)`;
+                
                 const video = card.querySelector('video');
                 if (video) video.play();
             }, 50);
@@ -246,6 +263,73 @@
                 backBtn.style.display = 'inline-block'; 
                 startFireworks();
             }
+        }
+
+        // --- DRAG & DROP LOGIC ---
+        function makeDraggable(element, initialRotation) {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
+
+            // Bring to front on touch/mousedown
+            const bringToFront = () => {
+                element.style.zIndex = ++globalZIndex;
+            };
+
+            // Mouse Events
+            element.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                bringToFront();
+                startX = e.clientX;
+                startY = e.clientY;
+                initialLeft = element.offsetLeft;
+                initialTop = element.offsetTop;
+                element.style.transition = 'none'; // Disable transition for instant drag
+                element.style.cursor = 'grabbing';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                element.style.left = `${initialLeft + dx}px`;
+                element.style.top = `${initialTop + dy}px`;
+            });
+
+            window.addEventListener('mouseup', () => {
+                if (isDragging) {
+                    isDragging = false;
+                    element.style.cursor = 'grab';
+                    element.style.transition = 'transform 0.3s ease'; // Re-enable transform transition
+                }
+            });
+
+            // Touch Events (Mobile)
+            element.addEventListener('touchstart', (e) => {
+                bringToFront();
+                const touch = e.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+                initialLeft = element.offsetLeft;
+                initialTop = element.offsetTop;
+                isDragging = true;
+                element.style.transition = 'none';
+            }, { passive: false });
+
+            window.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const touch = e.touches[0];
+                const dx = touch.clientX - startX;
+                const dy = touch.clientY - startY;
+                element.style.left = `${initialLeft + dx}px`;
+                element.style.top = `${initialTop + dy}px`;
+                e.preventDefault(); // Prevent scrolling while dragging
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => {
+                isDragging = false;
+                element.style.transition = 'transform 0.3s ease';
+            });
         }
 
         function toggleMusic() {
